@@ -89,30 +89,27 @@ def webviewfullscreen(driver):
     scroll_height = math.ceil((contain_size['height']-webview_location['y'])*scale)
     moved = 0
     count = 0
-    scrolled = 0
-    times = math.ceil(float(total_hegiht/screen_height)) + 1
     while True:
-        last_scrolled = moved
+        last_moved = moved
+        driver.switch_to.context('WEBVIEW_1')
+        scrolled = driver.execute_script('return document.body.scrollTop')
         driver.execute_script('window.scrollTo(0, %d);' % (count*scroll_height))
         moved = driver.execute_script('return document.body.scrollTop') - scrolled
-        scrolled = driver.execute_script('return document.body.scrollTop')
         time.sleep(1)
         driver.switch_to.context('NATIVE_APP')
         png = driver.get_screenshot_as_png()
         screenshots.append(png)
-        driver.switch_to.context('WEBVIEW_1')
         count += 1
-        if last_scrolled > moved or (last_scrolled > 0 and moved == 0):
+        if last_moved > moved or (last_moved > 0 and moved == 0):
             break
-    last_scroll = int(moved/scale)
+    the_last_moved = int(moved/scale)
 
-    driver.switch_to.context('NATIVE_APP')
     for each in range(len(screenshots)):
         img = Image.open(StringIO.StringIO(screenshots[each]))
         region = [webview_location['x'], webview_location['y'],
                   contain_size['width'], contain_size['height']]
         if each == len(screenshots)-1:
-            region[1]=region[3]-last_scroll
+            region[1]=region[3]-the_last_moved
         cimg = img.crop(tuple(region))
         cimgs.append(cimg)
         cimg.save('/tmp/crop_%d.png' % each)
