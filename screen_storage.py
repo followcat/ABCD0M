@@ -124,8 +124,29 @@ def webviewfullscreen(driver):
     return cimgs
 
 
+def MarkElement(id, driver):
+    jscodes = """
+    var ele = document.getElementById('%s');
+    ele.style.border='10px dashed red';""" % (id)
+    driver.execute_script(jscodes)
+
+
 def DOM(driver):
     jscodes = """
+    var infoarr = [
+    'padding', 'paddingTop', 'paddingBottom', 'paddingRight', 'paddingLeft',
+    'margin', 'marginTop', 'marginBottom', 'marginRight', 'marginLeft',
+    'content',
+    "border", "borderBottom", "borderBottomColor", "borderBottomLeftRadius",
+    "borderBottomRightRadius", "borderBottomStyle", "borderBottomWidth",
+    "borderCollapse", "borderColor", "borderImage", "borderImageOutset",
+    "borderImageRepeat", "borderImageSlice", "borderImageSource",
+    "borderImageWidth", "borderLeft", "borderLeftColor", "borderLeftStyle",
+    "borderLeftWidth", "borderRadius", "borderRight", "borderRightColor",
+    "borderRightStyle", "borderRightWidth", "borderSpacing", "borderStyle",
+    "borderTop", "borderTopColor", "borderTopLeftRadius", "borderTopRightRadius",
+    "borderTopStyle", "borderTopWidth", "borderWidth"];
+
     function dump_dom ()
     {
         if (typeof(Node) == "undefined") {
@@ -138,9 +159,13 @@ def DOM(driver):
 
     function css2json(css) {
         var s = {};
-        for (var i in css) {
-            if ((css[i])) {
-                s[i] = [css[i]];
+        if (css == null) {
+            return s;
+        }
+        for (var i in infoarr) {
+            var key = infoarr[i];
+            if (key in css) {
+                s[key] = [css[key]];
             }
         }
         return s;
