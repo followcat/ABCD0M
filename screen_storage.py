@@ -112,7 +112,7 @@ def webviewfullscreen(driver):
             region[1]=region[3]-the_last_moved
         cimg = img.crop(tuple(region))
         cimgs.append(cimg)
-        cimg.save('/tmp/crop_%d.png' % each)
+        # cimg.save('/tmp/crop_%d.png' % each)
 
     image_height = sum([each.size[1] for each in cimgs])
     result_image = Image.new('RGBA', (contain_size['width'], image_height))
@@ -120,8 +120,8 @@ def webviewfullscreen(driver):
     for each in cimgs:
         result_image.paste(each, (0, paste_height))
         paste_height += each.size[1]
-    result_image.save('/tmp/x.png')
-    return cimgs
+    # result_image.save('/tmp/x.png')
+    return result_image
 
 
 def MarkElement(id, driver):

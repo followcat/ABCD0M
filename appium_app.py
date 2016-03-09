@@ -1,8 +1,10 @@
+import time
 import unittest
 
 from appium import webdriver
 
 import screen_storage
+from images import image_diff
 
 PLATFORM_VERSION = '4.4'
 
@@ -22,10 +24,28 @@ class AndroidWebViewTests(unittest.TestCase):
 
         self.driver = webdriver.Remote('http://localhost:4723/wd/hub',
                                        desired_caps)
+        self.driver.switch_to.context('NATIVE_APP')
+        self.driver.tap([(240, 68)])
+        time.sleep(0.5)
+        self.driver.tap([(20, 68)])
+        time.sleep(0.5)
+        self.driver.tap([(240, 400)])
+        time.sleep(0.5)
 
-    def testDOM(self):
-        self.driver.get('http://www.bing.com/')
-        screen_storage.DOM(self.driver)
+    def testIndexDOM(self):
+        self.driver.switch_to.context('WEBVIEW_1')
+        self.driver.get('http://10.0.0.105:5000/')
+        self.indexDOM = screen_storage.DOM(self.driver)
+        indexShot = screen_storage.webviewfullscreen(self.driver)
+        indexShot.save('/tmp/im1.png')
+
+        self.driver.switch_to.context('WEBVIEW_1')
+        self.driver.get('http://10.0.0.105:5000/mod')
+        self.indexModDOM = screen_storage.DOM(self.driver)
+        indexModShot = screen_storage.webviewfullscreen(self.driver)
+        indexModShot.save('/tmp/im2.png')
+
+        image_diff('/tmp/im1.png', '/tmp/im2.png', '/tmp/diff.png', (0,255,0))
 
     def tearDown(self):
         self.driver.quit()
