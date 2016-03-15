@@ -157,6 +157,18 @@ def DOM(driver):
         return dom_dict;
     }
 
+    function getTop(e) { 
+        var offset=e.offsetTop; 
+        if(e.offsetParent!=null) offset+=getTop(e.offsetParent); 
+            return offset; 
+    } 
+
+    function getLeft(e) { 
+        var offset=e.offsetLeft; 
+        if(e.offsetParent!=null) offset+=getLeft(e.offsetParent); 
+            return offset; 
+    } 
+
     function css2json(css) {
         var s = {};
         if (css == null) {
@@ -179,6 +191,11 @@ def DOM(driver):
             'class': node.className,
             'value': node.nodeValue,
             'nodetype': node.nodeType,
+            'nodename': node.nodeName,
+            'height': node.clientHeight,
+            'width': node.clientWidth,
+            'top': getTop(node),
+            'left': getLeft(node),
             'attributes': [],
             'childNodes': [],
             'style': css2json(window.getComputedStyle(node, null)),
@@ -196,5 +213,6 @@ def DOM(driver):
 
     return dom_dict = dump_dom();
     """
+    driver.switch_to.context('WEBVIEW_1')
     style_dict = driver.execute_script(jscodes)
     return style_dict
